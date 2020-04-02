@@ -1,7 +1,14 @@
 CaveBot.Editor = {}
 CaveBot.Editor.Actions = {}
 
+-- also works as registerAction(action, params)
+-- params may be function
 CaveBot.Editor.registerAction = function(action, text, params)
+  if type(text) ~= 'string' then
+    params = text
+    text = action
+  end
+
   local color = nil
   if type(params) ~= 'function' then
     local raction = CaveBot.Actions[action]
@@ -41,7 +48,7 @@ CaveBot.Editor.setup = function()
   local ui = CaveBot.Editor.ui
   local registerAction = CaveBot.Editor.registerAction
 
-  registerAction("moveup", "move up", function()
+  registerAction("move up", function()
     local action = CaveBot.actionList:getFocusedChild()
     if not action then return end
     local index = CaveBot.actionList:getChildIndex(action)
@@ -50,7 +57,7 @@ CaveBot.Editor.setup = function()
     CaveBot.actionList:ensureChildVisible(action)
     CaveBot.save()
   end)
-  registerAction("movedown", "move down", function()
+  registerAction("move down", function()
     local action = CaveBot.actionList:getFocusedChild()
     if not action then return end
     local index = CaveBot.actionList:getChildIndex(action)
@@ -59,48 +66,48 @@ CaveBot.Editor.setup = function()
     CaveBot.actionList:ensureChildVisible(action)
     CaveBot.save()
   end)
-  registerAction("edit", "edit", function()
+  registerAction("edit", function()
     local action = CaveBot.actionList:getFocusedChild()
     if not action or not action.onDoubleClick then return end
     action.onDoubleClick(action)
   end)
-  registerAction("remove", "remove", function()
+  registerAction("remove", function()
     local action = CaveBot.actionList:getFocusedChild()
     if not action then return end
     action:destroy()
     CaveBot.save()
   end)
     
-  registerAction("label", "label", {
+  registerAction("label", {
     value="labelName",
     title="Label",
     description="Add label",
     multiline=false   
   })
-  registerAction("delay", "delay", {
+  registerAction("delay", {
     value="500",
     title="Delay",
     description="Delay next action (in milliseconds)",
     multiline=false,
     validation="^\\s*[0-9]{1,10}\\s*$"
   })
-  registerAction("gotolabel", "goto label", {
+  registerAction("gotolabel", "go to label", {
     value="labelName",
     title="Go to label",
     description="Go to label",
     multiline=false   
   })
-  registerAction("goto", "goto", {
+  registerAction("goto", "go to", {
     value=function() return posx() .. "," .. posy() .. "," .. posz() end,
     title="Go to position",
     description="Go to position (x,y,z)",
     multiline=false,
     validation="^\\s*([0-9]+)\\s*,\\s*([0-9]+)\\s*,\\s*([0-9]+)$"
   })
-  registerAction("use", "use", {
+  registerAction("use", {
     value=function() return posx() .. "," .. posy() .. "," .. posz() end,
     title="Use",
-    description="Use item at position (x,y,z) or from inventory (itemId)",
+    description="Use item from position (x,y,z) or from inventory (itemId)",
     multiline=false   
   }) 
   registerAction("usewith", "use with", {
@@ -110,13 +117,14 @@ CaveBot.Editor.setup = function()
     multiline=false,
     validation="^\\s*([0-9]+)\\s*,\\s*([0-9]+)\\s*,\\s*([0-9]+)\\s*,\\s*([0-9]+)$"
   })
-  registerAction("say", "say", {
+  registerAction("say", {
     value="text",
     title="Say",
     description="Enter text to say",
     multiline=false   
   }) 
-  registerAction("function", "function", {
+  registerAction("function", {
+    title="Edit bot function",
     multiline=true,
     value=CaveBot.Editor.ExampleFunctions[1][2],
     examples=CaveBot.Editor.ExampleFunctions,

@@ -7,7 +7,7 @@ end
 addExampleFunction("Click to browse example functions", [[
 -- available functions/variables:
 -- prev - result of previous action (true or false)
--- retries - number of retries of current function, goes up by one when your return "retry"
+-- retries - number of retries of current function, goes up by one when you return "retry"
 -- delay(number) - delays bot next action, value in milliseconds
 -- gotoLabel(string) - goes to specific label, return true if label exists
 -- you can easily access bot extensions, Depositer.run() instead of CaveBot.Extensions.Depositer.run()
@@ -15,12 +15,13 @@ addExampleFunction("Click to browse example functions", [[
 -- use storage variable to store date between calls
 
 -- function should return false, true or "retry"
--- if "retry" is returned, it will be executed again in 20 ms
+-- if "retry" is returned, function will be executed again in 20 ms (so better call delay before)
 
 return true
 ]])
 
 addExampleFunction("buy 200 mana potion from npc Eryn", [[
+--buy 200 mana potions
 local npc = getCreatureByName("Eryn")
 if not npc then 
   return false 
@@ -52,7 +53,13 @@ delay(1200)
 return true
 ]])
 
-addExampleFunction("2nd function", [[
-2nd
+addExampleFunction("Say hello 5 times with some delay", [[
+--say hello
+if retries > 5 then
+  return true -- finish
+end
+say("hello")
+delay(100 + retries * 100)
+return "retry"
 ]])
 
