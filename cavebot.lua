@@ -2,7 +2,7 @@
 -- visit http://bot.otclient.ovh/
 
 local cavebotTab = "Cave"
-local targetingAndLootingTab = "Target"
+local targetingTab = "Target"
 
 setDefaultTab(cavebotTab)
 CaveBot = {} -- global namespace
@@ -21,7 +21,17 @@ dofile("/cavebot/supply.lua")
 -- main cavebot file, must be last
 dofile("/cavebot/cavebot.lua")
 
-setDefaultTab(targetingAndLootingTab)
-TargeBot = {} -- global namespace
+setDefaultTab(targetingTab)
+TargetBot = {} -- global namespace
+importStyle("/targetbot/looting.otui")
+importStyle("/targetbot/target.otui")
+importStyle("/targetbot/creature_editor.otui")
+dofile("/targetbot/creature.lua")
+dofile("/targetbot/creature_editor.lua")
+dofile("/targetbot/creature_attack.lua")
+dofile("/targetbot/looting.lua")
+-- main targetbot file, must be last
 dofile("/targetbot/target.lua")
 
+addTab("HP")
+addTab("Tools")

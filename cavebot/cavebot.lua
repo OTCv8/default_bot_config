@@ -7,6 +7,7 @@ local ui = UI.createWidget("CaveBotPanel")
 
 ui.list = ui.listPanel.list -- shortcut
 CaveBot.actionList = ui.list
+
 if CaveBot.Editor then
   CaveBot.Editor.setup()
 end

@@ -1,8 +1,9 @@
 CaveBot.Editor = {}
 CaveBot.Editor.Actions = {}
 
--- also works as registerAction(action, params)
--- params may be function
+-- also works as registerAction(action, params), then text == action
+-- params are options for text editor or function to be executed when clicked
+-- you have many examples how to use it bellow
 CaveBot.Editor.registerAction = function(action, text, params)
   if type(text) ~= 'string' then
     params = text

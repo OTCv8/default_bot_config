@@ -2,7 +2,7 @@
 local tab = getTab("Main")
 
 addButton("luaEditor", "Lua editor", function(newText)
-  UI.MultilineEditor(storage.ingame_lua, {title="Lua editor"}, function(text)
+  UI.MultilineEditorWindow(storage.ingame_lua, {title="Lua editor"}, function(text)
     storage.ingame_lua = text
     reload()
   end)

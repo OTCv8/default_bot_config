@@ -12,6 +12,10 @@ CaveBotPanel < Panel
     type: verticalBox
     fit-children: true
 
+  HorizontalSeparator
+    margin-top: 2
+    margin-bottom: 5
+    
   Panel
     id: listPanel
     height: 100

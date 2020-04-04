@@ -1,4 +1,4 @@
-# Default config for OTClientV8 bot (min. version 2.2)
+# Default config for OTClientV8 bot (min. otcv8 version 2.2.2)
 
 ### Website: http://bot.otclient.ovh/
 ### Forum: https://otland.net/forums/otclient.494/
