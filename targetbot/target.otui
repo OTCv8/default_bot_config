@@ -69,10 +69,10 @@ TargetBotPanel < Panel
       self:getParent().editor:setVisible(self:isOn())
 
     $on:
-      text: Hide TargetBot config
+      text: Hide target editor
 
     $!on:
-      text: Show TargetBot config
+      text: Show target editor
   
   Panel
     id: editor
@@ -109,3 +109,7 @@ TargetBotPanel < Panel
         anchors.right: parent.right
         text: Remove
         width: 56
+    
+    BotSwitch
+      id: debug
+      text: Show target priority

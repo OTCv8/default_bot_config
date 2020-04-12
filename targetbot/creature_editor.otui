@@ -19,6 +19,27 @@ TargetBotCreatureEditorScrollBar < Panel
     maximum: 10
     step: 1
 
+TargetBotCreatureEditorTextEdit < Panel
+  height: 40
+  margin-top: 7
+
+  Label
+    id: text
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.top: parent.top
+    text-align: center
+    
+  TextEdit
+    id: textEdit
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.top: prev.bottom
+    margin-top: 5
+    minimum: 0
+    maximum: 10
+    step: 1
+
 TargetBotCreatureEditorCheckBox < BotSwitch
   height: 20
   margin-top: 7
@@ -71,13 +92,13 @@ TargetBotCreatureEditorWindow < MainWindow
     layout:
       type: verticalBox
       fit-children: true
-
+  
   Button
     id: help
-    !text: tr('Help')
+    !text: tr('Help & Tutorials')
     anchors.bottom: parent.bottom
     anchors.left: parent.left
-    width: 60
+    width: 150
     @onClick: g_platform.openUrl("http://bot.otclient.ovh/")
 
   Button

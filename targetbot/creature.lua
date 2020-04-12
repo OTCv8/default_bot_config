@@ -66,16 +66,16 @@ TargetBot.Creature.getConfigs = function(creature)
   return configs
 end
 
-TargetBot.Creature.calculateParams = function(creature)
+TargetBot.Creature.calculateParams = function(creature, path)
   local configs = TargetBot.Creature.getConfigs(creature)
   local priority = 0
   local danger = 0
   local selectedConfig = nil
   for _, config in ipairs(configs) do
-    local config_priority = TargetBot.Creature.calculatePriority(creature, config)
+    local config_priority = TargetBot.Creature.calculatePriority(creature, config, path)
     if config_priority > priority then
       priority = config_priority
-      danger = TargetBot.Creature.calculateDanger(creature, config)
+      danger = TargetBot.Creature.calculateDanger(creature, config, path)
       selectedConfig = config
     end
   end
@@ -85,15 +85,5 @@ TargetBot.Creature.calculateParams = function(creature)
     danger = danger,
     priority = priority
   }
-end
-
-TargetBot.Creature.calculatePriority = function(creature, config)
-  if not creature or not config then return 0 end
-  return config.priority
-end
-
-TargetBot.Creature.calculateDanger = function(creature, config)
-  if not creature or not config then return 0 end
-  return config.danger
 end
 

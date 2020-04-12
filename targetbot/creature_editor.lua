@@ -18,7 +18,14 @@ TargetBot.Creature.edit = function(config, callback) -- callback = function(newC
     table.insert(values, {id, function() return widget.scroll:getValue() end})
   end
 
-  local addCheckBox = function(id, title, value, defaultValue)
+  local addTextEdit = function(id, title, defaultValue)
+    local widget = UI.createWidget('TargetBotCreatureEditorTextEdit', editor.right)
+    widget.text:setText(title)
+    widget.textEdit:setText(config[id] or defaultValue or "")
+    table.insert(values, {id, function() return widget.textEdit:getText() end})
+  end
+
+  local addCheckBox = function(id, title, defaultValue)
     local widget = UI.createWidget('TargetBotCreatureEditorCheckBox', editor.right)
     widget.onClick = function()
       widget:setOn(not widget:isOn())
@@ -51,7 +58,24 @@ TargetBot.Creature.edit = function(config, callback) -- callback = function(newC
   -- values
   addScrollBar("priority", "Priority", 0, 10, 1)
   addScrollBar("danger", "Danger", 0, 10, 1)
-  addCheckBox("follow", "Follow", true)
-  addCheckBox("attack", "Attack", true)
+  addScrollBar("maxDistance", "Max distance", 1, 10, 1)
+  addScrollBar("keepDistanceRange", "Keep distance", 1, 5, 1)
+  addScrollBar("lureCount", "Lure", 0, 5, 1)
+
+  addScrollBar("minMana", "Minimum mana", 0, 3000, 100)
+  addScrollBar("attackSpellDelay", "Attack spell delay", 200, 5000, 2500)
+  addScrollBar("groupAttackRadius", "Radius of group attack spell", 1, 7, 1)
+  addScrollBar("groupAttackTargets", "Min. targets for group attack", 1, 5, 1)
+
+  addCheckBox("chase", "Chase", true)
+  addCheckBox("keepDistance", "Keep Distance", true)
+  addCheckBox("lure", "Lure", true)
+--  addCheckBox("avoidAttacks", "Avoid attacks", true)
+  addCheckBox("useSpellAttack", "Use attack spell", true)
+  addCheckBox("useGroupAttack", "Use group attack spell", true)
+  addCheckBox("groupAttackIgnorePlayers", "Ignore players in group attack", true)
+
+  addTextEdit("attackSpell", "Attack spell", "")
+  addTextEdit("groupAttackSpell", "Group attack spell", "")
 
 end

@@ -19,18 +19,31 @@ ui.config.right:setText("-")
 ui.danger.left:setText("Danger:")
 ui.danger.right:setText("0")
 
+ui.editor.debug.onClick = function()
+  local on = ui.editor.debug:isOn()
+  ui.editor.debug:setOn(not on)
+  if on then
+    for _, spec in ipairs(getSpectators()) do
+      spec:clearText()
+    end
+  end
+end
+
 -- main loop, controlled by config
 targetbotMacro = macro(100, function()
   local pos = player:getPosition()
-  local creatures = g_map.getSpectatorsInRange(pos, false, 7, 7) -- 7x7 area
+  local creatures = g_map.getSpectatorsInRange(pos, false, 5, 5) -- 10x10 area
+  if #creatures > 10 then -- if there are too many monsters around, limit area
+    creatures = g_map.getSpectatorsInRange(pos, false, 3, 3) -- 6x6 area
+  end
   local highestPriority = 0
   local dangerLevel = 0
   local targets = 0
   local highestPriorityParams = nil
   for i, creature in ipairs(creatures) do
-    local path = findPath(player:getPosition(), creature:getPosition(), 10, {ignoreLastCreature=true, ignoreNonPathable=true})
-    if not creature:isLocalPlayer() and path then
-      local params = TargetBot.Creature.calculateParams(creature) -- return {craeture, config, danger, priority}
+    local path = findPath(player:getPosition(), creature:getPosition(), 7, {ignoreLastCreature=true, ignoreNonPathable=true, ignoreCost=true})
+    if creature:isMonster() and path then
+      local params = TargetBot.Creature.calculateParams(creature, path) -- return {craeture, config, danger, priority}
       dangerLevel = dangerLevel + params.danger
       if params.priority > 0 then
         targets = targets + 1
@@ -38,18 +51,33 @@ targetbotMacro = macro(100, function()
           highestPriority = params.priority
           highestPriorityParams = params
         end
-        creature:setText(params.config.name .. "\n" .. params.priority .. " | " .. params.danger)
+        if ui.editor.debug:isOn() then
+          creature:setText(params.config.name .. "\n" .. params.priority)
+        end
       end
     end
   end
 
+  -- looting
+  local looting = TargetBot.Looting.process(dangerLevel)
+
   ui.danger.right:setText(dangerLevel)
-  if highestPriorityParams then
+  if highestPriorityParams and not isInPz() then
     ui.target.right:setText(highestPriorityParams.creature:getName())
     ui.config.right:setText(highestPriorityParams.config.name)
     lastAction = now
-    TargetBot.Creature.attack(highestPriorityParams)
+    TargetBot.Creature.attack(highestPriorityParams, targets, looting)    
+    if looting then
+      TargetBot.setStatus("Attacking & Looting")
+    else
+      TargetBot.setStatus("Attacking")
+    end
   else
+    if looting then
+      TargetBot.setStatus("Looting")
+    else
+      TargetBot.setStatus("Waiting")
+    end
     ui.target.right:setText("-")
     ui.config.right:setText("-")
   end
@@ -147,4 +175,27 @@ TargetBot.save = function()
   end
   TargetBot.Looting.save(data.looting)
   config.save(data)
+end
+
+-- attacks
+local lastSpell = 0
+
+TargetBot.saySpell = function(text, delay)
+  if not delay then delay = 2000 end
+  if lastSpell + delay < now then
+    say(text)
+    lastSpell = now
+  end
+end
+
+TargetBot.sayAttackSpell = function(text, delay)
+  if not delay then delay = 2000 end
+  if lastSpell + delay < now then
+    say(text)
+    lastSpell = now
+  end
+end
+
+TargetBot.useRune = function(target, rune, delay)
+  
 end

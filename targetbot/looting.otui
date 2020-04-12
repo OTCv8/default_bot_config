@@ -29,9 +29,28 @@ TargetBotLootingPanel < Panel
     id: containers
     margin-top: 3
     height: 45
-
-  Label
+  
+  Panel
+    id: maxDangerPanel
+    height: 20
     margin-top: 5
+    
+    BotTextEdit
+      id: value
+      anchors.right: parent.right
+      anchors.top: parent.top
+      anchors.bottom: parent.bottom
+      margin-right: 6
+      width: 80
+
+    Label
+      anchors.left: parent.left
+      anchors.verticalCenter: prev.verticalCenter
+      text: Max. danger:
+      margin-left: 5
+      
+  Label
+    margin-top: 3
     margin-left: 20
     margin-right: 20
     !text: tr("Drag item or click on any of empty slot")
