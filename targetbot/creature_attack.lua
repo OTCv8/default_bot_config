@@ -10,13 +10,14 @@ TargetBot.Creature.attack = function(params, targets, isLooting) -- params {conf
     g_game.attack(creature)
   end
 
-  if not isLooting then
+  if not isLooting then -- walk only when not looting
     TargetBot.Creature.walk(creature, config, targets)
   end
 
-  local attacked = false
-  if config.useGroupAttack and config.groupAttackSpell:len() > 1 and mana() > config.minMana then
-    local creatures = g_map.getSpectatorsInRange(player:getPosition(), false, config.groupAttackRadius, config.groupAttackRadius) -- 14x14 area
+  -- attacks
+  local mana = player:getMana()
+  if config.useGroupAttack and config.groupAttackSpell:len() > 1 and mana > config.minManaGroup then
+    local creatures = g_map.getSpectatorsInRange(player:getPosition(), false, config.groupAttackRadius, config.groupAttackRadius)
     local playersAround = false
     local monsters = 0
     for _, creature in ipairs(creatures) do
@@ -27,11 +28,20 @@ TargetBot.Creature.attack = function(params, targets, isLooting) -- params {conf
       end
     end
     if monsters >= config.groupAttackTargets and (not playersAround or config.groupAttackIgnorePlayers) then
-      TargetBot.sayAttackSpell(config.groupAttackSpell, config.attackSpellDelay or 2500)
+      if TargetBot.sayAttackSpell(config.groupAttackSpell, config.groupAttackDelay) then
+        return
+      end
     end
   end
-  if not attacked and config.useSpellAttack and config.attackSpell:len() > 1 and mana() > config.minMana then
-    TargetBot.sayAttackSpell(config.attackSpell, config.attackSpellDelay)
+  if config.useSpellAttack and config.attackSpell:len() > 1 and mana > config.minMana then
+    if TargetBot.sayAttackSpell(config.attackSpell, config.attackSpellDelay) then
+      return
+    end
+  end
+  if config.useRuneAttack and config.attackRune > 100 then
+    if TargetBot.useAttackItem(config.attackRune, creature, config.attackRuneDelay) then
+      return
+    end
   end
 end
 

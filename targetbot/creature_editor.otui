@@ -40,6 +40,23 @@ TargetBotCreatureEditorTextEdit < Panel
     maximum: 10
     step: 1
 
+TargetBotCreatureEditorItem < Panel
+  height: 34
+  margin-top: 7
+  margin-left: 25
+  margin-right: 25
+
+  Label
+    id: text
+    anchors.left: parent.left
+    anchors.verticalCenter: next.verticalCenter
+
+  BotItem
+    id: item
+    anchors.top: parent.top
+    anchors.right: parent.right
+
+
 TargetBotCreatureEditorCheckBox < BotSwitch
   height: 20
   margin-top: 7
@@ -47,7 +64,7 @@ TargetBotCreatureEditorCheckBox < BotSwitch
 TargetBotCreatureEditorWindow < MainWindow
   text: TargetBot creature editor
   width: 500
-  height: 600
+  height: 650
 
   Label
     anchors.left: parent.left

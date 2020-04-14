@@ -7,6 +7,11 @@ TargetBot.Creature.calculatePriority = function(creature, config, path)
     priority = priority + 1
   end
 
+  -- check if distance is fine, if not then attack only if already attacked
+  if #path > config.maxDistance then
+    return priority
+  end
+  
   -- extra priority for close distance
   local path_length = #path
   if path_length == 1 then

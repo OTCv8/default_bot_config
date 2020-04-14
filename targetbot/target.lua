@@ -189,24 +189,43 @@ end
 
 -- attacks
 local lastSpell = 0
+local lastAttackSpell = 0
 
 TargetBot.saySpell = function(text, delay)
-  --g_game.getProtocolVersion() >= 1090
-  if not delay then delay = 2000 end
+  if type(text) ~= 'string' or text:len() < 1 then return end
+  if not delay then delay = 500 end
+  if g_game.getProtocolVersion() < 1090 then
+    lastAttackSpell = now -- pause attack spells, healing spells are more important
+  end
   if lastSpell + delay < now then
     say(text)
     lastSpell = now
+    return true
   end
+  return false
 end
 
 TargetBot.sayAttackSpell = function(text, delay)
+  if type(text) ~= 'string' or text:len() < 1 then return end
   if not delay then delay = 2000 end
-  if lastSpell + delay < now then
+  if lastAttackSpell + delay < now then
     say(text)
-    lastSpell = now
+    lastAttackSpell = now
+    return true
   end
+  return false
 end
+
+local lastRuneAttack = 0
 
 TargetBot.useItem = function(item, target, delay)
   useWith(item, target)
+end
+
+TargetBot.useAttackItem = function(item, target, delay)
+  if not delay then delay = 2000 end
+  if lastRuneAttack + delay < now then
+    useWith(item, target)
+    lastRuneAttack = now
+  end
 end

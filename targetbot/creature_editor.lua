@@ -44,6 +44,13 @@ TargetBot.Creature.edit = function(config, callback) -- callback = function(newC
     table.insert(values, {id, function() return widget:isOn() end})
   end
 
+  local addItem = function(id, title, defaultItem)
+    local widget = UI.createWidget('TargetBotCreatureEditorItem', editor.right)
+    widget.text:setText(title)
+    widget.item:setItemId(config[id] or defaultItem)
+    table.insert(values, {id, function() return widget.item:getItemId() end})
+  end
+
   editor.cancel.onClick = function()
     editor:destroy()
   end
@@ -54,6 +61,7 @@ TargetBot.Creature.edit = function(config, callback) -- callback = function(newC
     for _, value in ipairs(values) do
       newConfig[value[1]] = value[2]()
     end
+    if newConfig.name:len() < 1 then return end
     newConfig.regex = "^" .. newConfig.name:trim():lower():gsub("%*", ".*"):gsub("%?", ".?") .. "$"
 
     editor:destroy()
@@ -63,25 +71,29 @@ TargetBot.Creature.edit = function(config, callback) -- callback = function(newC
   -- values
   addScrollBar("priority", "Priority", 0, 10, 1)
   addScrollBar("danger", "Danger", 0, 10, 1)
-  addScrollBar("maxDistance", "Max distance", 1, 10, 1)
+  addScrollBar("maxDistance", "Max distance", 1, 10, 10)
   addScrollBar("keepDistanceRange", "Keep distance", 1, 5, 1)
   addScrollBar("lureCount", "Lure", 0, 5, 1)
 
-  addScrollBar("minMana", "Minimum mana", 0, 3000, 100)
+  addScrollBar("minMana", "Min. mana for attack spell", 0, 3000, 200)
   addScrollBar("attackSpellDelay", "Attack spell delay", 200, 5000, 2500)
+  addScrollBar("minManaGroup", "Min. mana for group attack", 0, 3000, 1500)
+  addScrollBar("groupAttackTargets", "Min. targets for group attack", 1, 10, 2)
   addScrollBar("groupAttackRadius", "Radius of group attack spell", 1, 7, 1)
-  addScrollBar("groupAttackTargets", "Min. targets for group attack", 1, 10, 1)
-  addScrollBar("groupAttackDelay", "Group attack spell delay", 200, 10000, 5000)
+  addScrollBar("groupAttackDelay", "Group attack spell delay", 200, 60000, 5000)
+  addScrollBar("runeAttackDelay", "Rune attack delay", 200, 5000, 2000)
 
   addCheckBox("chase", "Chase", true)
-  addCheckBox("keepDistance", "Keep Distance", true)
-  addCheckBox("lure", "Lure", true)
+  addCheckBox("keepDistance", "Keep Distance", false)
+  addCheckBox("lure", "Lure", false)
 --  addCheckBox("avoidAttacks", "Avoid attacks", true)
-  addCheckBox("useSpellAttack", "Use attack spell", true)
-  addCheckBox("useGroupAttack", "Use group attack spell", true)
-  addCheckBox("groupAttackIgnorePlayers", "Ignore players in group attack", true)
 
+  addCheckBox("useSpellAttack", "Use attack spell", false)
   addTextEdit("attackSpell", "Attack spell", "")
+  addCheckBox("useGroupAttack", "Use group attack spell", false)
+  addCheckBox("groupAttackIgnorePlayers", "Ignore players in group attack", false)
   addTextEdit("groupAttackSpell", "Group attack spell", "")
+  addCheckBox("useRuneAttack", "Use attack rune", false)
+  addItem("attackRune", "Attack rune:", 0)
 
 end
