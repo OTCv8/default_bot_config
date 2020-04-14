@@ -47,7 +47,7 @@ TargetBotCreatureEditorCheckBox < BotSwitch
 TargetBotCreatureEditorWindow < MainWindow
   text: TargetBot creature editor
   width: 500
-  height: 500
+  height: 600
 
   Label
     anchors.left: parent.left

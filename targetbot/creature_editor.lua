@@ -13,6 +13,11 @@ TargetBot.Creature.edit = function(config, callback) -- callback = function(newC
       widget.text:setText(title .. ": " .. value)
     end
     widget.scroll:setRange(min, max)
+    if max-min > 1000 then
+      widget.scroll:setStep(100)
+    elseif max-min > 100 then
+      widget.scroll:setStep(10)
+    end
     widget.scroll:setValue(config[id] or defaultValue)
     widget.scroll.onValueChange(widget.scroll, widget.scroll:getValue())
     table.insert(values, {id, function() return widget.scroll:getValue() end})
@@ -65,7 +70,8 @@ TargetBot.Creature.edit = function(config, callback) -- callback = function(newC
   addScrollBar("minMana", "Minimum mana", 0, 3000, 100)
   addScrollBar("attackSpellDelay", "Attack spell delay", 200, 5000, 2500)
   addScrollBar("groupAttackRadius", "Radius of group attack spell", 1, 7, 1)
-  addScrollBar("groupAttackTargets", "Min. targets for group attack", 1, 5, 1)
+  addScrollBar("groupAttackTargets", "Min. targets for group attack", 1, 10, 1)
+  addScrollBar("groupAttackDelay", "Group attack spell delay", 200, 10000, 5000)
 
   addCheckBox("chase", "Chase", true)
   addCheckBox("keepDistance", "Keep Distance", true)

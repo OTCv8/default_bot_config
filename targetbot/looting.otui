@@ -48,7 +48,26 @@ TargetBotLootingPanel < Panel
       anchors.verticalCenter: prev.verticalCenter
       text: Max. danger:
       margin-left: 5
-      
+
+  Panel
+    id: minCapacityPanel
+    height: 20
+    margin-top: 3
+    
+    BotTextEdit
+      id: value
+      anchors.right: parent.right
+      anchors.top: parent.top
+      anchors.bottom: parent.bottom
+      margin-right: 6
+      width: 80
+
+    Label
+      anchors.left: parent.left
+      anchors.verticalCenter: prev.verticalCenter
+      text: Min. capacity:
+      margin-left: 5
+
   Label
     margin-top: 3
     margin-left: 20

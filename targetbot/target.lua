@@ -32,7 +32,7 @@ end
 -- main loop, controlled by config
 targetbotMacro = macro(100, function()
   local pos = player:getPosition()
-  local creatures = g_map.getSpectatorsInRange(pos, false, 5, 5) -- 10x10 area
+  local creatures = g_map.getSpectatorsInRange(pos, false, 6, 6) -- 12x12 area
   if #creatures > 10 then -- if there are too many monsters around, limit area
     creatures = g_map.getSpectatorsInRange(pos, false, 3, 3) -- 6x6 area
   end
@@ -58,28 +58,38 @@ targetbotMacro = macro(100, function()
     end
   end
 
+  -- reset walking
+  TargetBot.walkTo(nil)
+
   -- looting
-  local looting = TargetBot.Looting.process(dangerLevel)
+  local looting = TargetBot.Looting.process(targets, dangerLevel)
+  local lootingStatus = TargetBot.Looting.getStatus()
 
   ui.danger.right:setText(dangerLevel)
   if highestPriorityParams and not isInPz() then
     ui.target.right:setText(highestPriorityParams.creature:getName())
     ui.config.right:setText(highestPriorityParams.config.name)
-    lastAction = now
     TargetBot.Creature.attack(highestPriorityParams, targets, looting)    
-    if looting then
-      TargetBot.setStatus("Attacking & Looting")
+    if lootingStatus:len() > 0 then
+      TargetBot.setStatus("Attack & " .. lootingStatus)
     else
       TargetBot.setStatus("Attacking")
     end
+    TargetBot.walk()
+    lastAction = now
+    return
+  end
+
+  ui.target.right:setText("-")
+  ui.config.right:setText("-")
+  if looting then
+    TargetBot.walk()
+    lastAction = now
+  end
+  if lootingStatus:len() > 0 then
+    TargetBot.setStatus(lootingStatus)
   else
-    if looting then
-      TargetBot.setStatus("Looting")
-    else
-      TargetBot.setStatus("Waiting")
-    end
-    ui.target.right:setText("-")
-    ui.config.right:setText("-")
+    TargetBot.setStatus("Waiting")
   end
 end)
 
@@ -135,7 +145,7 @@ end
 
 -- public function, you can use them in your scripts
 TargetBot.isActive = function() -- return true if attacking or looting takes place
-  return lastAction + 200 > now
+  return lastAction + 300 > now
 end
 
 TargetBot.setStatus = function(text)
@@ -181,6 +191,7 @@ end
 local lastSpell = 0
 
 TargetBot.saySpell = function(text, delay)
+  --g_game.getProtocolVersion() >= 1090
   if not delay then delay = 2000 end
   if lastSpell + delay < now then
     say(text)
@@ -196,6 +207,6 @@ TargetBot.sayAttackSpell = function(text, delay)
   end
 end
 
-TargetBot.useRune = function(target, rune, delay)
-  
+TargetBot.useItem = function(item, target, delay)
+  useWith(item, target)
 end

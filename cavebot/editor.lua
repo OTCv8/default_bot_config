@@ -133,12 +133,10 @@ CaveBot.Editor.setup = function()
   })
   
   ui.autoRecording.onClick = function()
-    local status = not ui.autoRecording:isOn()
-    ui.autoRecording:setOn(status)
-    if status then
-      CaveBot.Recorder.enable()
-    else
+    if ui.autoRecording:isOn() then
       CaveBot.Recorder.disable()
+    else
+      CaveBot.Recorder.enable()
     end
   end
   

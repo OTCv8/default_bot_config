@@ -21,7 +21,7 @@ end
 local actionRetries = 0
 local prevActionResult = true
 cavebotMacro = macro(20, function()
-  if TargeBot and TargeBot.isActive() then
+  if TargetBot and TargetBot.isActive() then
     return -- target bot or looting is working, wait
   end
 
@@ -80,6 +80,12 @@ end)
 -- config, its callback is called immediately, data can be nil
 local lastConfig = ""
 config = Config.setup("cavebot_configs", configWidget, "cfg", function(name, enabled, data)
+  if enabled and CaveBot.Recorder.isOn() then
+    CaveBot.Recorder.disable()
+    CaveBot.setOff()
+    return    
+  end
+
   local currentActionIndex = ui.list:getChildIndex(ui.list:getFocusedChild())
   ui.list:destroyChildren()
   if not data then return cavebotMacro.setOff() end
@@ -181,6 +187,6 @@ CaveBot.save = function()
       end
     end
   end
-  table.insert(data, {"extensions", json.encode(extension_data)})
+  table.insert(data, {"extensions", json.encode(extension_data, 2)})
   config.save(data)
 end

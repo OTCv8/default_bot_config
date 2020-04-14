@@ -14,21 +14,23 @@ local function setup()
     if CaveBot.isOn() or not isEnabled then return end    
     if not lastPos then
       -- first step
-      return addPosition(oldPos)
+      addPosition(oldPos)
     elseif newPos.z ~= oldPos.z or math.abs(oldPos.x - newPos.x) > 1 or math.abs(oldPos.y - newPos.y) > 1 then
       -- stairs/teleport
-      return addPosition(oldPos)
+      addPosition(oldPos)
     elseif math.max(math.abs(lastPos.x - newPos.x), math.abs(lastPos.y - newPos.y)) > 5 then
       -- 5 steps from last pos
-      return addPosition(newPos)
+      addPosition(newPos)
     end
   end)
   
   onUse(function(pos, itemId, stackPos, subType)
     if CaveBot.isOn() or not isEnabled then return end
     if pos.x == 0xFFFF then 
+      lastPos = pos
       CaveBot.addAction("use", itemId, true)
     else
+      lastPos = pos
       CaveBot.addAction("use", pos.x .. "," .. pos.y .. "," .. pos.z, true)
     end
   end)
@@ -38,8 +40,13 @@ local function setup()
     if not target:isItem() then return end
     local targetPos = target:getPosition()
     if targetPos.x == 0xFFFF then return end
+    lastPos = pos
     CaveBot.addAction("usewith", itemId .. "," .. pos.x .. "," .. pos.y .. "," .. pos.z, true)
   end)
+end
+
+CaveBot.Recorder.isOn = function()
+  return isEnabled
 end
 
 CaveBot.Recorder.enable = function()
@@ -47,6 +54,7 @@ CaveBot.Recorder.enable = function()
   if isEnabled == nil then
     setup()
   end
+  CaveBot.Editor.ui.autoRecording:setOn(true)
   isEnabled = true
   lastPos = nil
 end
@@ -55,5 +63,6 @@ CaveBot.Recorder.disable = function()
   if isEnabled == true then
     isEnabled = false
   end
+  CaveBot.Editor.ui.autoRecording:setOn(false)
   CaveBot.save()
 end
