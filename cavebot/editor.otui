@@ -29,6 +29,8 @@ CaveBotEditorPanel < Panel
     text-auto-resize: true
     text-wrap: true
     margin-top: 3
+    margin-left: 2
+    margin-right: 2
 
   BotSwitch
     id: autoRecording
