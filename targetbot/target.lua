@@ -216,19 +216,24 @@ TargetBot.sayAttackSpell = function(text, delay)
   return false
 end
 
+local lastItemUse = 0
 local lastRuneAttack = 0
 
 TargetBot.useItem = function(item, subType, target, delay)
-  local thing = g_things.getThingType(item)
-  if not thing or not thing:isFluidContainer() then
-    subType = g_game.getClientVersion() >= 860 and 0 or 1
-  end
-  if g_game.getClientVersion() < 780 then
-    local tmpItem = g_game.findPlayerItem(item, subType)
-    if not tmpItem then return end
-    g_game.useWith(tmpItem, target, subType) -- using item from bp
-  else
-    g_game.useInventoryItemWith(item, target, subType) -- hotkey
+  if not delay then delay = 200 end
+  if lastItemUse + delay < now then
+    local thing = g_things.getThingType(item)
+    if not thing or not thing:isFluidContainer() then
+      subType = g_game.getClientVersion() >= 860 and 0 or 1
+    end
+    if g_game.getClientVersion() < 780 then
+      local tmpItem = g_game.findPlayerItem(item, subType)
+      if not tmpItem then return end
+      g_game.useWith(tmpItem, target, subType) -- using item from bp
+    else
+      g_game.useInventoryItemWith(item, target, subType) -- hotkey
+    end
+    lastItemUse = now
   end
 end
 
@@ -244,7 +249,7 @@ TargetBot.useAttackItem = function(item, subType, target, delay)
       if not tmpItem then return end
       g_game.useWith(tmpItem, target, subType) -- using item from bp  
     else
-      g_game.useInventoryItemWith(healingInfo.item, target, subType) -- hotkey
+      g_game.useInventoryItemWith(item, target, subType) -- hotkey
     end
     lastRuneAttack = now
   end
