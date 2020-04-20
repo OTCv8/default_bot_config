@@ -21,7 +21,7 @@ end
 local actionRetries = 0
 local prevActionResult = true
 cavebotMacro = macro(20, function()
-  if TargetBot and TargetBot.isActive() then
+  if TargetBot and TargetBot.isActive() and not TargetBot.isCaveBotActionAllowed() then
     return -- target bot or looting is working, wait
   end
 

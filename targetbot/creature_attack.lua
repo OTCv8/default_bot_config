@@ -21,7 +21,7 @@ TargetBot.Creature.attack = function(params, targets, isLooting) -- params {conf
     local playersAround = false
     local monsters = 0
     for _, creature in ipairs(creatures) do
-      if not creature:isLocalPlayer() and creature:isPlayer() then
+      if not creature:isLocalPlayer() and creature:isPlayer() and (not config.groupAttackIgnoreParty or creature:getShield() <= 2) then
         playersAround = true
       elseif creature:isMonster() then
         monsters = monsters + 1
@@ -29,6 +29,24 @@ TargetBot.Creature.attack = function(params, targets, isLooting) -- params {conf
     end
     if monsters >= config.groupAttackTargets and (not playersAround or config.groupAttackIgnorePlayers) then
       if TargetBot.sayAttackSpell(config.groupAttackSpell, config.groupAttackDelay) then
+        return
+      end
+    end
+  end
+
+  if config.useGroupAttackRune and config.groupAttackRune > 100 then
+    local creatures = g_map.getSpectatorsInRange(creature:getPosition(), false, config.groupRuneAttackRadius, config.groupRuneAttackRadius)
+    local playersAround = false
+    local monsters = 0
+    for _, creature in ipairs(creatures) do
+      if not creature:isLocalPlayer() and creature:isPlayer() and (not config.groupAttackIgnoreParty or creature:getShield() <= 2) then
+        playersAround = true
+      elseif creature:isMonster() then
+        monsters = monsters + 1
+      end
+    end
+    if monsters >= config.groupRuneAttackTargets and (not playersAround or config.groupAttackIgnorePlayers) then
+      if TargetBot.useAttackItem(config.groupAttackRune, 0, creature, config.groupRuneAttackDelay) then
         return
       end
     end
@@ -46,25 +64,49 @@ TargetBot.Creature.attack = function(params, targets, isLooting) -- params {conf
 end
 
 TargetBot.Creature.walk = function(creature, config, targets)
+  local cpos = creature:getPosition()
+  local pos = player:getPosition()
+  
   -- luring
-  if config.lure and not (config.chase and creature:getHealthPercent() < 30) then
+  if (config.lure or config.lureCavebot) and not (config.chase and creature:getHealthPercent() < 30) then
     local monsters = 0
     if targets < config.lureCount then
-      local path = findPath(player:getPosition(), creature:getPosition(), 5, {ignoreNonPathable=true, precision=2})
-      if path then
-        return TargetBot.walkTo(creature:getPosition(), 10, {marginMin=5, marginMax=6, ignoreNonPathable=true})
+      if config.lureCavebot then
+        return TargetBot.allowCaveBot(200)
+      else
+        local path = findPath(pos, cpos, 5, {ignoreNonPathable=true, precision=2})
+        if path then
+          return TargetBot.walkTo(cpos, 10, {marginMin=5, marginMax=6, ignoreNonPathable=true})
+        end
       end
     end
   end
 
-  local currentDistance = findPath(player:getPosition(), creature:getPosition(), 10, {ignoreCreatures=true, ignoreNonPathable=true, ignoreCost=true})
+  local currentDistance = findPath(pos, cpos, 10, {ignoreCreatures=true, ignoreNonPathable=true, ignoreCost=true})
   if config.chase and (creature:getHealthPercent() < 30 or not config.keepDistance) then
     if #currentDistance > 1 then
-      return TargetBot.walkTo(creature:getPosition(), 10, {ignoreNonPathable=true, precision=1})
+      return TargetBot.walkTo(cpos, 10, {ignoreNonPathable=true, precision=1})
     end
   elseif config.keepDistance then
     if #currentDistance ~= config.keepDistanceRange and #currentDistance ~= config.keepDistanceRange + 1 then
-      return TargetBot.walkTo(creature:getPosition(), 10, {ignoreNonPathable=true, marginMin=config.keepDistanceRange, marginMax=config.keepDistanceRange + 1})
+      return TargetBot.walkTo(cpos, 10, {ignoreNonPathable=true, marginMin=config.keepDistanceRange, marginMax=config.keepDistanceRange + 1})
+    end
+  end
+
+  if config.avoidAttacks then
+    local diffx = cpos.x - pos.x
+    local diffy = cpos.y - pos.y
+    local candidates = {}
+    if math.abs(diffx) == 1 and diffy == 0 then
+      candidates = {{x=pos.x, y=pos.y-1, z=pos.z}, {x=pos.x, y=pos.y+1, z=pos.z}}
+    elseif diffx == 0 and math.abs(diffy) == 1 then
+      candidates = {{x=pos.x-1, y=pos.y, z=pos.z}, {x=pos.x+1, y=pos.y, z=pos.z}}
+    end
+    for _, candidate in ipairs(candidates) do
+      local tile = g_map.getTile(candidate)
+      if tile and tile:isWalkable() then
+        return TargetBot.walkTo(candidate, 2, {ignoreNonPathable=true})
+      end
     end
   end
 end

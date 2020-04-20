@@ -1,6 +1,7 @@
 local targetbotMacro = nil
 local config = nil
 local lastAction = 0
+local cavebotAllowance = 0
 
 -- ui
 local configWidget = UI.Config()
@@ -72,6 +73,8 @@ targetbotMacro = macro(100, function()
     TargetBot.Creature.attack(highestPriorityParams, targets, looting)    
     if lootingStatus:len() > 0 then
       TargetBot.setStatus("Attack & " .. lootingStatus)
+    elseif cavebotAllowance > now then
+      TargetBot.setStatus("Luring using CaveBot")
     else
       TargetBot.setStatus("Attacking")
     end
@@ -148,6 +151,10 @@ TargetBot.isActive = function() -- return true if attacking or looting takes pla
   return lastAction + 300 > now
 end
 
+TargetBot.isCaveBotActionAllowed = function()
+  return cavebotAllowance > now
+end
+
 TargetBot.setStatus = function(text)
   return ui.status.right:setText(text)
 end
@@ -185,6 +192,10 @@ TargetBot.save = function()
   end
   TargetBot.Looting.save(data.looting)
   config.save(data)
+end
+
+TargetBot.allowCaveBot = function(time)
+  cavebotAllowance = now + time
 end
 
 -- attacks

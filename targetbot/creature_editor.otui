@@ -1,6 +1,6 @@
 TargetBotCreatureEditorScrollBar < Panel
-  height: 35
-  margin-top: 7
+  height: 28
+  margin-top: 3
 
   Label
     id: text
@@ -14,7 +14,7 @@ TargetBotCreatureEditorScrollBar < Panel
     anchors.left: parent.left
     anchors.right: parent.right
     anchors.top: prev.bottom
-    margin-top: 5
+    margin-top: 3
     minimum: 0
     maximum: 10
     step: 1
@@ -64,7 +64,7 @@ TargetBotCreatureEditorCheckBox < BotSwitch
 TargetBotCreatureEditorWindow < MainWindow
   text: TargetBot creature editor
   width: 500
-  height: 650
+  height: 600
 
   Label
     anchors.left: parent.left
